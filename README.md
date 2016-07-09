@@ -6,6 +6,7 @@ power status and volume.
 
 # Requirements
 * MQTT broker (like [Mosquitto](https://mosquitto.org/))
+* libcec3 with python bindings (https://drgeoffathome.wordpress.com/2015/08/09/a-premade-libcec-deb/ for a compiled RPI version)
 * HDMI-CEC interface device (like a [Pulse-Eight](https://www.pulse-eight.com/) device, or a Raspberry Pi)
 * HDMI-CEC compatible devices (TV, audio receiver, cable box, ...)
 

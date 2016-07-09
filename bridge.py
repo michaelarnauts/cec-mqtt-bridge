@@ -2,8 +2,8 @@
 
 import paho.mqtt.client as mqtt
 import cec
-import json
 import time
+import re
 
 ### Settings
 mqqt_broker = "rafael"
@@ -11,10 +11,36 @@ mqqt_port = 1883
 mqqt_prefix = 'cec'
 cec_port = 'RPI'
 
+cache = {}
 
 def cec_on_log(level, time, message):
     if level == cec.CEC_LOG_TRAFFIC:
         print "log traf: ", message
+
+        # Report Power Status
+        m = re.search('>> ([0-9a-f])[0-9a-f]:90:([0-9a-f]{2})', message)
+        if m:
+            id = int(m.group(1), 16)
+            #power = lib.PowerStatusToString(int(m.group(2)))
+            if (m.group(2) == '00') or (m.group(2) == '02'):
+                power = 'on'
+            else:
+                power = 'standby'
+            mqtt_send(mqqt_prefix + '/power/' + str(id), power)
+
+        # Device Vendor ID
+        m = re.search('>> ([0-9a-f])[0-9a-f]:87', message)
+        if m:
+            id = int(m.group(1), 16)
+            power = 'on'
+            mqtt_send(mqqt_prefix + '/power/' + str(id), power)
+
+        # Report Physical Address
+        # m = re.search('>> ([0-9a-f])[0-9a-f]:84', message)
+        # if m:
+        #     id = int(m.group(1), 16)
+        #     power = 'on'
+        #     mqtt_send(mqqt_prefix + '/power/' + str(id), power)
 
     if level == cec.CEC_LOG_ALL:
         print "log all: ", message
@@ -32,20 +58,20 @@ def cec_on_log(level, time, message):
         print "log error: ", message
 
 
-def cec_on_key(key, duration):
-    print "key: ", key, duration
+# def cec_on_key(key, duration):
+#     print "key: ", key, duration
 
 
-def cec_on_cmd(level, time, message):
-    print "cmd: ", message
+# def cec_on_cmd(level, time, message):
+#     print "cmd: ", message
 
 
-def cec_on_menu(level, time, message):
-    print "menu: ", message
+# def cec_on_menu(level, time, message):
+#     print "menu: ", message
 
 
-def cec_on_source(level, time, message):
-    print "source: ", message
+# def cec_on_source(level, time, message):
+#     print "source: ", message
 
 
 def mqqt_on_connect(client, userdata, flags, rc):
@@ -64,7 +90,7 @@ def mqqt_on_message(client, userdata, message):
 
     try:
 
-        # Decompose topic
+        # Decode topic
         (null, cmd) = message.topic.split('/')
         print "Command received: %s" % cmd
 
@@ -92,11 +118,15 @@ def mqqt_on_message(client, userdata, message):
 
         elif cmd == 'off':
             print " Sending off"
-            lib.StandbyDevices(int(message.payload))
+            id = int(message.payload)
+            lib.Transmit(lib.CommandFromString('1%s:36' % ('{0:x}'.format(id))))
+            mqtt_send(mqqt_prefix + '/power/' + str(id), 'standby')
 
         elif cmd == 'on':
             print " Sending on"
-            lib.PowerOnDevices(int(message.payload))
+            id = int(message.payload)
+            lib.Transmit(lib.CommandFromString('1%s:44:6D' % ('{0:x}'.format(id))))
+            mqtt_send(mqqt_prefix + '/power/' + str(id), 'on')
 
         else:
             print " Unknown command %s" % cmd
@@ -105,17 +135,18 @@ def mqqt_on_message(client, userdata, message):
         print "Error during processing of message: ", message.topic, message.payload, str(e)
 
 
+def mqtt_send(topic, value):
+    if (topic not in cache) or (cache[topic] != value):
+        cache[topic] = value
+        mqttc.publish(topic, value, retain=True)
+
+
 def refresh():
     try:
         print "Refreshing...."
-        # lib.AudioStatus()
-
-        # Scan all devices on the bus
-        addresses = lib.GetActiveDevices()
-        for x in range(15):
-            if addresses.IsSet(x):
-                power = lib.GetDevicePowerStatus(x)
-                mqttc.publish(mqqt_prefix + '/power/' + str(x), lib.PowerStatusToString(power))
+        for id in range(15):
+            command = '1%s:8F' % '{0:x}'.format(id)
+            lib.Transmit(lib.CommandFromString(command))
 
     except Exception, e:
         print "Error during refreshing: ", str(e)
@@ -141,10 +172,10 @@ try:
     cecconfig.deviceTypes.Add(cec.CEC_DEVICE_TYPE_RECORDING_DEVICE)
     cecconfig.clientVersion = cec.LIBCEC_VERSION_CURRENT
     cecconfig.SetLogCallback(cec_on_log)
-    cecconfig.SetKeyPressCallback(cec_on_key)
-    cecconfig.SetCommandCallback(cec_on_cmd)
-    cecconfig.SetMenuStateCallback(cec_on_menu)
-    cecconfig.SetSourceActivatedCallback(cec_on_source)
+    # cecconfig.SetKeyPressCallback(cec_on_key)
+    # cecconfig.SetCommandCallback(cec_on_cmd)
+    # cecconfig.SetMenuStateCallback(cec_on_menu)
+    # cecconfig.SetSourceActivatedCallback(cec_on_source)
     lib = cec.ICECAdapter.Create(cecconfig)
     print "libCEC version " + lib.VersionToString(cecconfig.serverVersion)
     print "Library: " + lib.GetLibInfo()

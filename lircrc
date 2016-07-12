@@ -1,0 +1,20 @@
+begin
+  button = KEY_RED
+  prog = cec-ir-mqtt
+  config = KEY_RED
+end
+begin
+  button = KEY_YELLOW
+  prog = cec-ir-mqtt
+  config = KEY_YELLOW
+end
+begin
+  button = KEY_GREEN
+  prog = cec-ir-mqtt
+  config = KEY_GREEN
+end
+begin
+  button = KEY_BLUE
+  prog = cec-ir-mqtt
+  config = KEY_BLUE
+end

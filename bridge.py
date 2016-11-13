@@ -214,6 +214,8 @@ try:
     mqtt_client = mqtt.Client("cec-ir-mqtt")
     mqtt_client.on_connect = mqqt_on_connect
     mqtt_client.on_message = mqqt_on_message
+    if config['mqtt']['user']:
+        mqtt_client.username_pw_set(config['mqtt']['user'], password=config['mqtt']['password']);
     mqtt_client.connect(config['mqtt']['broker'], config['mqtt']['port'], 60)
     mqtt_client.loop_start()
 

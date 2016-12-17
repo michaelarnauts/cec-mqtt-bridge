@@ -1,20 +1,58 @@
+# Colors
 begin
+  remote = mceusb
   button = KEY_RED
   prog = cec-ir-mqtt
   config = KEY_RED
 end
 begin
+  remote = mceusb
   button = KEY_YELLOW
   prog = cec-ir-mqtt
   config = KEY_YELLOW
 end
 begin
+  remote = mceusb
   button = KEY_GREEN
   prog = cec-ir-mqtt
   config = KEY_GREEN
 end
 begin
+  remote = mceusb
   button = KEY_BLUE
   prog = cec-ir-mqtt
   config = KEY_BLUE
 end
+
+# Media control
+begin
+  remote = mceusb
+  button = KEY_PLAY
+  prog = cec-ir-mqtt
+  config = KEY_PLAY
+end
+begin
+  remote = mceusb
+  button = KEY_PAUSE
+  prog = cec-ir-mqtt
+  config = KEY_PAUSE
+end
+begin
+  remote = mceusb
+  button = KEY_STOP
+  prog = cec-ir-mqtt
+  config = KEY_STOP
+end
+begin
+  remote = mceusb
+  button = KEY_NEXT
+  prog = cec-ir-mqtt
+  config = KEY_NEXT
+end
+begin
+  remote = mceusb
+  button = KEY_AGAIN
+  prog = cec-ir-mqtt
+  config = KEY_AGAIN
+end
+

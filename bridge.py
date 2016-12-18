@@ -53,48 +53,54 @@ def mqtt_on_message(client, userdata, message):
 
         # Decode topic
         cmd = message.topic.replace(config['mqtt']['prefix'], '').strip('/')
-        print("Command received on topic %s: %s (%s)" % (message.topic, cmd, message.payload))
+        print("Command received: %s (%s)" % (cmd, message.payload))
 
         split = cmd.split('/')
 
         if split[0] == 'cec':
 
             if split[1] == 'cmd':
-                if message.payload == 'mute':
+
+                action = message.payload.decode()
+
+                if action == 'mute':
                     cec_client.AudioMute()
                     return
 
-                if message.payload == 'unmute':
+                if action == 'unmute':
                     cec_client.AudioUnmute()
                     return
 
-                if message.payload == 'voldown':
+                if action == 'voldown':
                     cec_client.VolumeDown()
                     return
 
-                if message.payload == 'volup':
+                if action == 'volup':
                     cec_client.VolumeUp()
                     return
 
-                raise Exception("Unknown command %s" % cmd)
+                raise Exception("Unknown command (%s)" % action)
 
             if split[2] == 'cmd':
-                if message.payload == 'on':
+
+                action = message.payload.decode()
+
+                if action == 'on':
                     id = int(split[1])
                     cec_send('44:6D', id=id)
                     mqtt_send(config['mqtt']['prefix'] + '/cec/' + str(id), 'on', True)
                     return
 
-                if message.payload == 'off':
+                if action == 'off':
                     id = int(split[1])
                     cec_send('36', id=id)
                     mqtt_send(config['mqtt']['prefix'] + '/cec/' + str(id), 'off', True)
                     return
 
-                raise Exception("Unknown command %s" % cmd)
+                raise Exception("Unknown command (%s)" % action)
 
             if split[1] == 'tx':
-                commands = message.payload.split(',')
+                commands = message.payload.decode().split(',')
                 for command in commands:
                     print(" Sending raw: %s" % command)
                     cec_send(command)
@@ -104,7 +110,7 @@ def mqtt_on_message(client, userdata, message):
 
             if split[2] == 'tx':
                 remote = split[1]
-                key = message.payload
+                key = message.payload.decode()
                 ir_send(remote, key)
                 return
 

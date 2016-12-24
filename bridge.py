@@ -81,6 +81,13 @@ def mqtt_on_message(client, userdata, message):
 
                 raise Exception("Unknown command (%s)" % action)
 
+            if split[1] == 'tx':
+                commands = message.payload.decode().split(',')
+                for command in commands:
+                    print(" Sending raw: %s" % command)
+                    cec_send(command)
+                return
+
             if split[2] == 'cmd':
 
                 action = message.payload.decode()
@@ -98,13 +105,6 @@ def mqtt_on_message(client, userdata, message):
                     return
 
                 raise Exception("Unknown command (%s)" % action)
-
-            if split[1] == 'tx':
-                commands = message.payload.decode().split(',')
-                for command in commands:
-                    print(" Sending raw: %s" % command)
-                    cec_send(command)
-                return
 
         if split[0] == 'ir':
 

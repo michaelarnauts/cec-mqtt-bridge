@@ -7,6 +7,7 @@ import time
 import re
 import configparser as ConfigParser
 import threading
+import os
 
 # Default configuration
 config = {
@@ -14,6 +15,8 @@ config = {
         'broker': 'localhost',
         'port': 1883,
         'prefix': 'media',
+        'user': os.environ.get('MQTT_USER'),
+        'password': os.environ.get('MQTT_PASSWORD'),
     },
     'cec': {
         'enabled': 0,
@@ -207,12 +210,18 @@ try:
     ### Parse config ###
     try:
         Config = ConfigParser.SafeConfigParser()
-        if not Config.read("config.ini"):
-            raise Exception('Could not load config.ini')
+        if Config.read("config.ini"):
 
-        # Load all sections and overwrite default configuration
-        for section in Config.sections():
-            config[section].update(dict(Config.items(section)))
+            # Load all sections and overwrite default configuration
+            for section in Config.sections():
+                config[section].update(dict(Config.items(section)))
+
+        # Environment variables
+        for section in config:
+            for key,value in config[section].items():
+                env = os.getenv(section.upper() + '_' + key.upper());
+                if env:
+                    config[section][key] = type(value)(env)
 
         # Do some checks
         if (not int(config['cec']['enabled']) == 1) and \

@@ -1,2 +1,2 @@
 python-lirc==1.2.3
-paho-mqtt==1.2
+paho-mqtt==1.3

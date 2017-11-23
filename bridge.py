@@ -30,7 +30,7 @@ config = {
 }
 
 
-def mqtt_on_connect(client, userdata, rc):
+def mqtt_on_connect(client, userdata, flags, rc):
     """@type client: paho.mqtt.client """
 
     print("Connection returned result: " + str(rc))

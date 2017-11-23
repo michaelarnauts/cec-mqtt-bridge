@@ -177,13 +177,14 @@ def ir_listen_thread():
                 code = lirc.nextcode()
             except lirc.NextCodeError:
                 code = None
-            if len(code) == 1:
-                code = code[0]
-                mqtt_send(config['mqtt']['prefix'] + '/ir/rx', code)
-            if len(code) == 2:
-                remote = code[0]
-                code = code[1]
-                mqtt_send(config['mqtt']['prefix'] + '/ir/' + remote + '/rx', code)
+            if code:
+                code = code[0].split(",")
+                if len(code) == 1:
+                    mqtt_send(config['mqtt']['prefix'] + '/ir/rx', code[0].strip())
+                elif len(code) == 2:
+                    remote = code[0].strip()
+                    code = code[1].strip()
+                    mqtt_send(config['mqtt']['prefix'] + '/ir/' + remote + '/rx', code)
             else:
                 time.sleep(0.2)
     except:

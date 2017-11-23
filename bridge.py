@@ -29,23 +29,24 @@ config = {
     }
 }
 
+
 def mqtt_on_connect(client, userdata, rc):
     """@type client: paho.mqtt.client """
 
-    print("Connection returned result: "+str(rc))
+    print("Connection returned result: " + str(rc))
 
     # Subscribe to CEC commands
     if int(config['cec']['enabled']) == 1:
         client.subscribe([
-          (config['mqtt']['prefix'] + '/cec/cmd', 0),
-          (config['mqtt']['prefix'] + '/cec/+/cmd', 0),
-          (config['mqtt']['prefix'] + '/cec/tx', 0)
+            (config['mqtt']['prefix'] + '/cec/cmd', 0),
+            (config['mqtt']['prefix'] + '/cec/+/cmd', 0),
+            (config['mqtt']['prefix'] + '/cec/tx', 0)
         ])
 
     # Subscribe to IR commands
     if int(config['ir']['enabled']) == 1:
         client.subscribe([
-          (config['mqtt']['prefix'] + '/ir/+/tx', 0)
+            (config['mqtt']['prefix'] + '/ir/+/tx', 0)
         ])
 
 
@@ -126,7 +127,6 @@ def mqtt_send(topic, value, retain=False):
 
 
 def cec_on_message(level, time, message):
-
     if level == cec.CEC_LOG_TRAFFIC:
 
         # Send raw command to mqtt
@@ -218,7 +218,7 @@ try:
 
         # Environment variables
         for section in config:
-            for key,value in config[section].items():
+            for key, value in config[section].items():
                 env = os.getenv(section.upper() + '_' + key.upper());
                 if env:
                     config[section][key] = type(value)(env)
@@ -237,6 +237,7 @@ try:
         print("Initialising CEC...")
         try:
             import cec
+
             cec_config = cec.libcec_configuration()
             cec_config.strDeviceName = "cec-ir-mqtt"
             cec_config.bActivateSource = 0
@@ -252,14 +253,15 @@ try:
 
     ### Setup IR ###
     if int(config['ir']['enabled']) == 1:
-        print( "Initialising IR...")
+        print("Initialising IR...")
         try:
             import lirc
+
             lirc.init("cec-ir-mqtt", "lircrc", blocking=False)
             lirc_thread = threading.Thread(target=ir_listen_thread)
             lirc_thread.start()
         except Exception as e:
-            print( "ERROR: Could not initialise IR:", str(e))
+            print("ERROR: Could not initialise IR:", str(e))
             exit(1)
 
     ### Setup MQTT ###

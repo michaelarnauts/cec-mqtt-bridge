@@ -51,7 +51,7 @@ The bridge publishes to the following topics:
 |:------------------------|-----------------------------------------|--------------------------------------------------|
 | `prefix`/cec/`id`       | `on` / `off`                            | Report power status of device with id `id`.      |
 | `prefix`/cec/rx         | `command`                               | Notify that `command` was received.              |
-| `prefix`/ir/rx          | `key`                                   | Notify that `key` of `remote` was received. You have to configure `key` in the lircrc file. |
+| `prefix`/ir/`remote`/rx | `key`                                   | Notify that `key` of `remote` was received. You have to configure `key` in the lircrc file. |
 
 `id` is the address (0-15) of the device on the CEC-bus.
 

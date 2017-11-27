@@ -178,7 +178,7 @@ def ir_listen_thread():
             except lirc.NextCodeError:
                 code = None
             if code:
-                code = code[0].split(",")
+                code = code[0].split(",", maxsplit=1)
                 if len(code) == 1:
                     mqtt_send(config['mqtt']['prefix'] + '/ir/rx', code[0].strip())
                 elif len(code) == 2:

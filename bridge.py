@@ -276,7 +276,7 @@ try:
     mqtt_client.on_message = mqtt_on_message
     if config['mqtt']['user']:
         mqtt_client.username_pw_set(config['mqtt']['user'], password=config['mqtt']['password']);
-    mqtt_client.connect(config['mqtt']['broker'], config['mqtt']['port'], 60)
+    mqtt_client.connect(config['mqtt']['broker'], int(config['mqtt']['port']), 60)
     mqtt_client.loop_start()
 
     print("Starting main loop...")

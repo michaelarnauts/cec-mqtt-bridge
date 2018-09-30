@@ -28,6 +28,10 @@ A HDMI-CEC / IR to MQTT bridge written in Python 3 for connecting your AV-device
 * lirc + hardware to receive and send IR signals
 * python-lirc (https://pypi.python.org/pypi/python-lirc/)
 
+# Configuration
+
+You can either copy `config.default.ini` to `config.ini` and adjust its properties, or alternatively declare any of those as environment variables using the format `SECTION_KEY` (e.g., `MQTT_USER`).
+
 # Lirc
 
 You need a `lircrc` config file. This can be generated from the `lircd.conf` of your lirc daemon using the script `create_lircrc.py`.

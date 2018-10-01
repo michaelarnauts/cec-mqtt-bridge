@@ -49,6 +49,9 @@ def mqtt_on_connect(client, userdata, flags, rc):
             (config['mqtt']['prefix'] + '/ir/+/tx', 0)
         ])
 
+    # Publish birth message
+    client.publish(config['mqtt']['prefix'] + '/bridge/status', 'online', qos=1, retain=True)
+
 
 def mqtt_on_message(client, userdata, message):
     """@type client: paho.mqtt.client """
@@ -206,6 +209,7 @@ def cec_refresh():
 
 def cleanup():
     mqtt_client.loop_stop()
+    mqtt_client.publish(config['mqtt']['prefix'] + '/bridge/status', 'offline', qos=1, retain=True)
     mqtt_client.disconnect()
     if int(config['ir']['enabled']) == 1:
         lirc.deinit()
@@ -276,6 +280,7 @@ try:
     mqtt_client.on_message = mqtt_on_message
     if config['mqtt']['user']:
         mqtt_client.username_pw_set(config['mqtt']['user'], password=config['mqtt']['password']);
+    mqtt_client.will_set(config['mqtt']['prefix'] + '/bridge/status', 'offline', qos=1, retain=True)
     mqtt_client.connect(config['mqtt']['broker'], int(config['mqtt']['port']), 60)
     mqtt_client.loop_start()
 

@@ -127,12 +127,12 @@ def mqtt_on_message(client, userdata, message):
                                     cec_client.VolumeUp()
                                 else:
                                     cec_client.VolumeDown()
-                                attempts += 1
 
                             # Refresh the volume levels and wait for the value to return before each loop
                             cec_send('71', id=5)
                             time.sleep(.2)
                             volume = cec_volume()
+                            attempts += 1
                         return
 
                     raise Exception("Unknown command (%s)" % action)

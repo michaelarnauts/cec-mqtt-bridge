@@ -40,6 +40,7 @@ def mqtt_on_connect(client, userdata, flags, rc):
         client.subscribe([
             (config['mqtt']['prefix'] + '/cec/cmd', 0),
             (config['mqtt']['prefix'] + '/cec/+/cmd', 0),
+            (config['mqtt']['prefix'] + '/cec/+/set', 0),
             (config['mqtt']['prefix'] + '/cec/tx', 0)
         ])
 
@@ -99,6 +100,43 @@ def mqtt_on_message(client, userdata, message):
                     cec_send(command)
                 return
 
+            if split[2] == 'set':
+
+                if split[1] == 'volume':
+                    action = int(message.payload.decode())
+
+                    if action >= 0 and action <= 100:
+                        volume = cec_volume()
+
+                        # Attempt to set the correct volume, but try to avoid a never-ending loop due to rounding issues
+                        attempts = 0
+                        while volume != action and attempts <= 10:
+                            diff = abs(volume - action)
+
+                            # Run a bulk of vol up/down actions to close a large gap at first (inaccurate, but quick)
+                            if diff >= 10:
+                                for _ in range(round(diff / 2.5)):
+                                    if volume < action:
+                                        cec_client.VolumeUp()
+                                    else:
+                                        cec_client.VolumeDown()
+
+                            # Set the volume precisely after the bulk operations, try to avoid an endless loop due to rounding
+                            else:
+                                if volume < action:
+                                    cec_client.VolumeUp()
+                                else:
+                                    cec_client.VolumeDown()
+                                attempts += 1
+
+                            # Refresh the volume levels and wait for the value to return before each loop
+                            cec_send('71', id=5)
+                            time.sleep(.2)
+                            volume = cec_volume()
+                        return
+
+                    raise Exception("Unknown command (%s)" % action)
+
             if split[2] == 'cmd':
 
                 action = message.payload.decode()
@@ -131,7 +169,6 @@ def mqtt_on_message(client, userdata, message):
 
 def mqtt_send(topic, value, retain=False):
     mqtt_client.publish(topic, value, retain=retain)
-    print('{}: {}'.format(topic, value))
 
 
 def cec_on_message(level, time, message):
@@ -189,6 +226,14 @@ def cec_on_message(level, time, message):
             if mute:
                 mqtt_send(config['mqtt']['prefix'] + '/cec/mute', mute, True)
             return
+
+
+def cec_volume():
+    audio_status = cec_client.AudioStatus()
+    if audio_status <= 100:
+        return audio_status
+    elif audio_status >= 128:
+        return audio_status - 128
 
 
 def cec_send(cmd, id=None):

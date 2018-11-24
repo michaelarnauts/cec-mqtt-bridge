@@ -74,6 +74,7 @@ The bridge subscribes to the following topics:
 |:------------------------|-----------------------------------------|--------------------------------------------------|
 | `prefix`/cec/`id`/cmd   | `on` / `off`                            | Turn on/off device with id `id`.                 |
 | `prefix`/cec/cmd        | `mute` / `unmute` / `voldown` / `volup` | Sends the specified command to the audio system. |
+| `prefix`/cec/volume/set | `integer (0-100)`                       | Sets the volume level of the audio system to a specific level. |
 | `prefix`/cec/tx         | `commands`                              | Send the specified `commands` to the CEC bus. You can specify multiple commands by separating them with a space. Example: `cec/tx 15:44:41,15:45`. |
 | `prefix`/ir/`remote`/tx | `key`                                   | Send the specified `key` of `remote` to the IR transmitter. |
 

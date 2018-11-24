@@ -83,6 +83,8 @@ The bridge publishes to the following topics:
 |:------------------------|-----------------------------------------|--------------------------------------------------|
 | `prefix`/bridge/status  | `online` / `offline`                    | Report availability status of the bridge.        |
 | `prefix`/cec/`id`       | `on` / `off`                            | Report power status of device with id `id`.      |
+| `prefix`/cec/volume     | `integer (0-100)`                       | Report volume level of the audio system.         |
+| `prefix`/cec/mute       | `on` / `off`                            | Report mute status of the audio system.          |
 | `prefix`/cec/rx         | `command`                               | Notify that `command` was received.              |
 | `prefix`/ir/`remote`/rx | `key`                                   | Notify that `key` of `remote` was received. You have to configure `key` AND `remote` as config in the lircrc file.  |
 | `prefix`/ir/rx          | `key`                                   | Notify that `key` was received. You have to configure `key` in the lircrc file. This format is used if the remote is not given in the config file.  |

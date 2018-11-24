@@ -72,18 +72,22 @@ def mqtt_on_message(client, userdata, message):
 
                 if action == 'mute':
                     cec_client.AudioMute()
+                    cec_send('71', id=5)
                     return
 
                 if action == 'unmute':
                     cec_client.AudioUnmute()
+                    cec_send('71', id=5)
                     return
 
                 if action == 'voldown':
                     cec_client.VolumeDown()
+                    cec_send('71', id=5)
                     return
 
                 if action == 'volup':
                     cec_client.VolumeUp()
+                    cec_send('71', id=5)
                     return
 
                 raise Exception("Unknown command (%s)" % action)
@@ -127,6 +131,7 @@ def mqtt_on_message(client, userdata, message):
 
 def mqtt_send(topic, value, retain=False):
     mqtt_client.publish(topic, value, retain=retain)
+    print('{}: {}'.format(topic, value))
 
 
 def cec_on_message(level, time, message):
@@ -163,6 +168,26 @@ def cec_on_message(level, time, message):
             id = int(m.group(1), 16)
             power = 'on'
             mqtt_send(config['mqtt']['prefix'] + '/cec/' + str(id), power, True)
+            return
+
+        # Report Audio Status
+        m = re.search('>> ([0-9a-f])[0-9a-f]:7a:([0-9a-f]{2})', message)
+        if m:
+            volume = None
+            mute = None
+
+            audio_status = int(m.group(2), 16)
+            if audio_status <= 100:
+                volume = audio_status
+                mute = 'off'
+            elif audio_status >= 128:
+                volume = audio_status - 128
+                mute = 'on'
+
+            if isinstance(volume, int):
+                mqtt_send(config['mqtt']['prefix'] + '/cec/volume', volume, True)
+            if mute:
+                mqtt_send(config['mqtt']['prefix'] + '/cec/mute', mute, True)
             return
 
 
@@ -202,6 +227,8 @@ def cec_refresh():
     try:
         for id in config['cec']['devices'].split(','):
             cec_send('8F', id=int(id))
+
+        cec_send('71', id=5)
 
     except Exception as e:
         print("Error during refreshing: ", str(e))

@@ -18,7 +18,7 @@ config = {
         'prefix': 'media',
         'user': os.environ.get('MQTT_USER'),
         'password': os.environ.get('MQTT_PASSWORD'),
-        'tls': False,
+        'tls': 0,
     },
     'cec': {
         'enabled': 0,
@@ -354,7 +354,7 @@ try:
     mqtt_client.on_message = mqtt_on_message
     if config['mqtt']['user']:
         mqtt_client.username_pw_set(config['mqtt']['user'], password=config['mqtt']['password']);
-    if config['mqtt']['tls']:
+    if int(config['mqtt']['tls']) == 1:
         mqtt_client.tls_set();
     mqtt_client.will_set(config['mqtt']['prefix'] + '/bridge/status', 'offline', qos=1, retain=True)
     mqtt_client.connect(config['mqtt']['broker'], int(config['mqtt']['port']), 60)

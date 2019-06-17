@@ -28,7 +28,7 @@ config = {
     },
     'ir': {
         'enabled': 0,
-        'sleep': 0.2
+        'sleep': 0.2,
     }
 }
 

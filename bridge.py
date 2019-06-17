@@ -28,6 +28,7 @@ config = {
     },
     'ir': {
         'enabled': 0,
+        'sleep': 0.2,
     }
 }
 
@@ -247,6 +248,7 @@ def cec_send(cmd, id=None):
 
 def ir_listen_thread():
     try:
+        sleep_time = float(config['ir']['sleep'])
         while True:
             try:
                 code = lirc.nextcode()
@@ -261,7 +263,7 @@ def ir_listen_thread():
                     code = code[1].strip()
                     mqtt_send(config['mqtt']['prefix'] + '/ir/' + remote + '/rx', code)
             else:
-                time.sleep(0.2)
+                time.sleep(sleep_time)
     except:
         return
 

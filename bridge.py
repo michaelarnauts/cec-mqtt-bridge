@@ -358,7 +358,7 @@ try:
         mqtt_client.tls_set();
     mqtt_client.will_set(config['mqtt']['prefix'] + '/bridge/status', 'offline', qos=1, retain=True)
     mqtt_client.connect(config['mqtt']['broker'], int(config['mqtt']['port']), 60)
-    mqtt_client.loop_start()
+    mqtt_client.loop_forever()
 
     print("Starting main loop...")
     while True:

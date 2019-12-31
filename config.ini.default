@@ -5,13 +5,10 @@
 ; Hostname of mqtt broker (required)
 ;broker=localhost
 
-; Name of your device (default=cec-ir-mqtt)
-;devicename=cec-ir-mqtt 
-
 ; Port to connect to (default=1883)
 ;port=1883
 
-; Use tls
+; Use TLS
 ;tls=0
 
 ; Username and password
@@ -19,7 +16,10 @@
 ;password=
 
 ; MQTT prefix to use
-;prefix=media
+;prefix=m edia
+
+; Name of your device (default=cec-ir-mqtt)
+;name=cec-ir-mqtt
 
 ;
 ; HDMI-CEC configuration
@@ -36,6 +36,9 @@
 
 ; Devices to query (comma seperated, defaults to all devices)
 ;devices=0,2,3,4,5
+
+; Name of your device (default=cec-ir-mqtt)
+;name=OSMC
 
 ;
 ; LIRC configuration

@@ -5,7 +5,7 @@ import logging
 import threading
 import time
 
-LOGGER = logging.getLogger('lirc')
+LOGGER = logging.getLogger(__name__)
 
 DEFAULT_CONFIGURATION = {
     'enabled': 0,

@@ -4,15 +4,14 @@
 import configparser as ConfigParser
 import logging
 import os
+import paho.mqtt.client as mqtt
 import threading
 import time
-
-import paho.mqtt.client as mqtt
 
 from lib import hdmicec, lirc
 
 LOGGER = logging.getLogger('bridge')
-logging.basicConfig(level='DEBUG', format='%(asctime)s [%(name)s] %(funcName)s: %(message)s')
+logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(name)s] %(funcName)s: %(message)s')
 
 # Default configuration
 DEFAULT_CONFIGURATION = {

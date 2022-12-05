@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+import cec
 import logging
 import math
 import re
@@ -7,9 +8,7 @@ import threading
 import time
 from typing import List
 
-import cec
-
-LOGGER = logging.getLogger('hdmicec')
+LOGGER = logging.getLogger(__name__)
 
 DEFAULT_CONFIGURATION = {
     'enabled': 0,
@@ -74,18 +73,18 @@ class HdmiCec:
                 return
 
             # Device Vendor ID
-            # m = re.search('>> ([0-9a-f])[0-9a-f]:87', message)
-            # if m:
-            #     device = int(m.group(1), 16)
-            #     self._mqtt_send('cec/power/%d/status' % device, 'on')
-            #     return
+            m = re.search('>> ([0-9a-f])[0-9a-f]:87', message)
+            if m:
+                device = int(m.group(1), 16)
+                self._mqtt_send('cec/power/%d/status' % device, 'on')
+                return
 
             # Report Physical Address
-            # m = re.search('>> ([0-9a-f])[0-9a-f]:84', message)
-            # if m:
-            #     device = int(m.group(1), 16)
-            #     self._mqtt_send('cec/power/%d/status' % device, 'on')
-            #     return
+            m = re.search('>> ([0-9a-f])[0-9a-f]:84', message)
+            if m:
+                device = int(m.group(1), 16)
+                self._mqtt_send('cec/power/%d/status' % device, 'on')
+                return
 
             # Report Audio Status
             m = re.search('>> ([0-9a-f])[0-9a-f]:7a:([0-9a-f]{2})', message)
@@ -231,8 +230,7 @@ class HdmiCec:
         for device in self.devices:
             # Ask device to send us an power status update
             self.tx_command('8F', device=device)
-            time.sleep(0.5)
+            time.sleep(2)
 
         # Ask AVR to send us an audio status update
         self.tx_command('71', device=5)
-

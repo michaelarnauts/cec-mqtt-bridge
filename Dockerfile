@@ -1,7 +1,7 @@
 FROM jonaseck/rpi-raspbian-libcec-py
 
 RUN sed -i '/jessie-updates/d' /etc/apt/sources.list  # Now archived
-RUN printf "deb http://archive.debian.org/debian/ jessie main\ndeb-src http://archive.debian.org/debian/ jessie main\ndeb http://security.debi>
+RUN printf "deb http://archive.debian.org/debian/ jessie main\ndeb-src http://archive.debian.org/debian/ jessie main\ndeb http://security.debian.org jessie/updates main\ndeb-src http://security.debian.org jessie/updates main" > /etc/apt/sources.list
 
 RUN apt-get update \
  && apt-get install -qqy libxrandr2 lirc liblircclient-dev \

@@ -118,7 +118,7 @@ class Bridge:
     def mqtt_on_message(self, client: mqtt, userdata, message):
 
         # Decode topic and split off the prefix
-        topic = message.topic.split('/')[1:]
+        topic = message.topic.replace(self.config['mqtt']['prefix'], '').split('/')[1:]
         action = message.payload.decode()
         LOGGER.info("Command received: %s (%s)" % (topic, message.payload))
 

@@ -217,7 +217,7 @@ class HdmiCec:
         else:
             full_command = '%s:%s' % (format(self.device_id * 16 + device, 'x'), command)
 
-        LOGGER.info('Sending %s' % full_command)
+        LOGGER.debug('Sending %s' % full_command)
         self.cec_client.Transmit(self.cec_client.CommandFromString(full_command))
 
     def refresh(self):

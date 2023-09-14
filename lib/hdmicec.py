@@ -225,7 +225,7 @@ class HdmiCec:
         if self.setting_volume:
             return
 
-        LOGGER.info('Refreshing HDMI-CEC...')
+        LOGGER.debug('Refreshing HDMI-CEC...')
 
         for device in self.devices:
             # Ask device to send us an power status update

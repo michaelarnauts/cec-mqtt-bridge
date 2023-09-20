@@ -49,7 +49,19 @@ class Bridge:
         if int(self.config['mqtt']['tls']) == 1:
             self.mqtt_client.tls_set()
         self.mqtt_client.will_set(self.config['mqtt']['prefix'] + '/bridge/status', 'offline', qos=1, retain=True)
-        self.mqtt_client.connect(self.config['mqtt']['broker'], int(self.config['mqtt']['port']), 60)
+        # Connect with MQTT Broker as a loop so it gets retried every 10 seconds.
+        connect_flag=False
+        while True:
+            try:
+                self.mqtt_client.connect(self.config['mqtt']['broker'], int(self.config['mqtt']['port']), 60)
+                connect_flag=True
+                break
+            except:
+                if connect_flag == False:
+                    LOGGER.info("Waiting for MQTT connection")
+                time.sleep(10)             # sleep for 10 seconds and then retry forever
+            continue
+
         self.mqtt_client.loop_start()
 
         # Setup HDMI-CEC
@@ -122,7 +134,7 @@ class Bridge:
         action = message.payload.decode()
         LOGGER.info("Command received: %s (%s)" % (topic, message.payload))
 
-        if topic[0] == 'cec':
+        if hasattr(self, 'cec_class') and topic[0] == 'cec':
 
             if topic[1] == 'power':
                 device = int(topic[2])
